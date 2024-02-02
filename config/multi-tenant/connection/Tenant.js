@@ -1,9 +1,12 @@
 
 const mongoose = require('mongoose')
+const logger = require('../../../utilities/Logger')
 
 
 
 async function initTenantDbConnection(DB_URL, dbConnectionOptions, domainPrefix) {
+    logger.info('Inside TenantJs : initTenantDbConnection method ')
+
     return new Promise((resolve, reject) => {
         try {
             const db = mongoose.createConnection(DB_URL, dbConnectionOptions)
@@ -30,8 +33,9 @@ async function initTenantDbConnection(DB_URL, dbConnectionOptions, domainPrefix)
 
             })
         } catch (error) {
-            console.log('Inside TenantJS: initTenantDbConnection method: Error while connecting to Tenant database: ', error);
+            logger.info(`Error while connecting to Tenant database : ${error.message}`)
             reject(error);
+            throw new Error(error.message);
 
         }
 

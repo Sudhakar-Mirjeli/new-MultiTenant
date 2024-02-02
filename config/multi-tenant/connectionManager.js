@@ -2,12 +2,15 @@
 const { ADMIN_DB_NAME, BASE_DB_URI } = require('../../config')
 const initAdminDbConnection = require('./connection/Admin');
 const initTenantDbConnection = require('./connection/Tenant');
+const logger = require('../../utilities/Logger')
+
 
 const TenantService = require('../multi-tenant/service/Tenant.service')
 let connectionMap;
 let adminDbConnection;
 
 async function connectAllDb() {
+    logger.info('Inside ConnectionMangerService : connectAllDb method ')
     return new Promise(async (resolve, reject) => {
         let tenants = []
         let ADMIN_DB_URI = `${BASE_DB_URI}/${ADMIN_DB_NAME}`
@@ -41,18 +44,17 @@ async function connectAllDb() {
                 }
             }
         } catch (error) {
-            console.log('Error while connecting to Tenant DB Connection', error)
+            logger.info(`Error while connecting to all DBs : ${error.message}`)
             reject(error)
+            throw new Error(error.message);            
 
         }
-
-
     })
 }
 
 
 async function getAdminConnection() {
-    console.log("========55555555", adminDbConnection)
+    logger.info('Inside ConnectionMangerService : getAdminConnection method ')
     if (adminDbConnection) {
         return adminDbConnection
     }
@@ -60,7 +62,7 @@ async function getAdminConnection() {
 }
 
 async function getConnectionByTenant(tenantDomain) {
-    console.log("tenantDomain=====", tenantDomain, "connectionMap", connectionMap)
+    logger.info('Inside ConnectionMangerService : getConnectionByTenant method ')
     if (connectionMap && connectionMap[tenantDomain])
         return connectionMap[tenantDomain]
 }

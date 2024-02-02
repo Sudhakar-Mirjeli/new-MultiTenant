@@ -2,16 +2,14 @@
 const config = require('../config')
 const jwt = require('jsonwebtoken');
 const HTTP_STATUS = require('../models/http-status/Http-Status')
+const logger = require('../utilities/Logger')
 
 
 async function createNewUser(body, masterDBConnection) {
     try {
+        logger.info('Inside UserService : createNewUser method ')
         let UserModel = masterDBConnection.model("users")
-        console.log("555555555", UserModel)
-        console.log("body.email", body.email)
-
         const isUserExist = await UserModel.find({ email: body.email })
-        console.log("isUserExist", isUserExist)
         if (isUserExist.length > 0)
             return {
                 message: 'User already exist!'
@@ -19,30 +17,26 @@ async function createNewUser(body, masterDBConnection) {
         else {
             const createUser = new UserModel(body);
             await createUser.save();
-
-            const token = jwt.sign(body, config.SERVER.JWT_SECRET_KEY, { expiresIn: '8h' })
-            console.log("token", token)
-
+            const token = jwt.sign(body, config.SERVER.JWT_SECRET, { expiresIn: '8h' })
             return {
                 token: token,
                 message: 'User created successfully.'
             };
         }
     } catch (error) {
-        console.log("error",error)
-        console.error(`error while creating new user : ${error.message}`)
-        throw error;
+        logger.info(`Error while creating a new user : ${error.message}`)
+        throw new Error(error.message);;
     }
 }
 
 async function loginUser(body, masterDBConnection) {
     try {
-        console.log("41", body)
+        logger.info('Inside UserService : loginUser method ')
         let UserModel = masterDBConnection.model("users")
         const isUserExist = await UserModel.find({ email: body.email, password: body.password })
         let token;
         if (isUserExist) {
-            token = jwt.sign(body, config.SERVER.JWT_SECRET_KEY, { expiresIn: '2h' })
+            token = jwt.sign(body, config.SERVER.JWT_SECRET, { expiresIn: '2h' })
             return {
                 message: 'login successfully.',
                 token: token
@@ -55,7 +49,10 @@ async function loginUser(body, masterDBConnection) {
 
         }
 
-    } catch {
+    } catch (error) {
+        logger.error(`Error occurred while login :${error.message}`)
+        // return error.message
+        throw new Error(error.message);
 
     }
 }

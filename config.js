@@ -2,14 +2,13 @@ require('dotenv').config();
 
 
 const {
-    JWT_SECRET, MONGO_URI, BASE_DB_URI, ADMIN_DB_NAME, JWT_SECRET_KEY, PORT
+    JWT_SECRET, MONGO_URI, BASE_DB_URI, ADMIN_DB_NAME, PORT
 } = process.env;
 
 module.exports = {
     SERVER: {
         JWT_SECRET: JWT_SECRET,
         MONGO_URI: MONGO_URI,
-        JWT_SECRET_KEY: JWT_SECRET_KEY,
         PORT: PORT
 
 
